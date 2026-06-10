@@ -23,7 +23,7 @@ import subprocess
 # ── 設定 ─────────────────────────────────────────────
 BASE       = pathlib.Path(__file__).resolve().parent
 DATA_PATH  = BASE / "data" / "takarazuka_2026.json"
-AUTO_PUSH  = False          # True で git push まで自動化（GitHub Pages即反映）
+AUTO_PUSH  = True           # True で git push まで自動化（GitHub Pages即反映）
 TIMEOUT    = 300            # claude 応答の最大待機秒数
 
 # ── Claude Code への指示（厳格JSONのみ返させる）──────────
@@ -53,7 +53,7 @@ def run_claude(prompt: str) -> str:
     """既存agentと同じ claude -p 方式で実行し、stdoutを返す。"""
     exe = shutil.which("claude") or "claude"   # Windowsで claude.cmd の場合も which が解決
     proc = subprocess.run(
-        [exe, "-p", prompt],
+        [exe, "-p", prompt, "--allowedTools", "WebSearch,WebFetch"],
         capture_output=True,
         text=True,
         encoding="utf-8",
