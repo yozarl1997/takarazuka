@@ -1,0 +1,23 @@
+{
+  "race": "宝塚記念 2026",
+  "updated": "初期データ（未取得）",
+  "track": "枠順確定前",
+  "post_confirmed": false,
+  "weather": { "high": 28, "low": 19, "rain": 40 },
+  "horses": [
+    { "num": null, "gate": null, "name": "クロワデュノール",     "jockey": "北村友一", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "メイショウタバル",     "jockey": "確認中",   "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "マスカレードボール",   "jockey": "確認中",   "weight": "—",    "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "レガレイラ",           "jockey": "確認中",   "weight": "56.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "ミュージアムマイル",   "jockey": "確認中",   "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "ダノンデサイル",       "jockey": "戸崎圭太", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "コスモキュランダ",     "jockey": "横山武史", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "シンエンペラー",       "jockey": "坂井瑠星", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "スティンガーグラス",   "jockey": "岩田望来", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "ビザンチンドリーム",   "jockey": "西村淳也", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "シェイクユアハート",   "jockey": "古川吉洋", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "シュガークン",         "jockey": "吉村誠之助", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "ジューンテイク",       "jockey": "松山弘平", "weight": "58.0", "odds": null, "pop": null },
+    { "num": null, "gate": null, "name": "タガノデュード",       "jockey": "高杉吏麒", "weight": "58.0", "odds": null, "pop": null }
+  ]
+}
