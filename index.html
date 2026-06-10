@@ -149,6 +149,29 @@
   @keyframes fi{to{opacity:1;transform:none;}}
   @media (prefers-reduced-motion:reduce){.fadein{animation:none;opacity:1;transform:none;}.rbtn:active{transform:none;}}
 
+  /* Betting tabs */
+  .bets .seg{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .bets .seg::-webkit-scrollbar{display:none;}
+  .bets .seg button{flex:0 0 auto;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:-.01em;
+    color:var(--muted);background:var(--card);border:none;border-radius:980px;padding:8px 16px;cursor:pointer;transition:background .15s,color .15s,transform .12s;}
+  .bets .seg button:active{transform:scale(.95);}
+  .bets .seg button.on{color:#fff;background:var(--blue);}
+  .bets .legend{font-size:12px;color:var(--muted);line-height:1.8;background:var(--card);border-radius:14px;padding:11px 14px;margin-bottom:10px;}
+  .bets .legend b{color:var(--text);font-weight:700;}
+  .bets .panel{display:none;background:var(--card);border-radius:16px;padding:15px 16px;}
+  .bets .panel.on{display:block;animation:fi .35s ease;}
+  .bets .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px;}
+  .bets .ph .nm{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+  .bets .ph .tier{font-size:11px;font-weight:700;color:#00310f;background:var(--green);border-radius:980px;padding:3px 11px;white-space:nowrap;}
+  .bets .rec{background:var(--bg2);border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.65;}
+  .bets .rec .ln{padding:3px 0;display:flex;gap:8px;}
+  .bets .rec .k{color:var(--gold);font-weight:700;flex:0 0 auto;min-width:42px;}
+  .bets .why{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:11px;}
+  .bets .why b{color:var(--text);font-weight:700;}
+  .bets .note{font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5;}
+  .bets .alloc{font-size:12px;color:var(--muted);line-height:1.65;background:rgba(255,214,10,.07);border-radius:14px;padding:12px 14px;margin-top:10px;}
+  .bets .alloc b{color:var(--gold);font-weight:700;}
+
   @media(min-width:600px){
     .kpi{grid-template-columns:repeat(4,1fr);}
     .charts{grid-template-columns:repeat(3,1fr);}
@@ -211,6 +234,19 @@
         <div class="pick"><span class="tag t-renka">連下</span><div><div class="nm">ダノンデサイル / レガレイラ</div><div class="ds">デサイルは大阪杯3着＆追い切り抜群。レガレイラは有馬実績の牝馬。近年は下位人気の好走も多い。</div></div></div>
       </div>
       <div class="ev"><b>期待値メモ：</b>1番人気の信頼度は高い（阪神2200で複勝81%）が単勝1倍台では妙味薄。CFDのRR管理と同じく「勝率の高い軸 × オッズの付く2〜3着付け」で回収率を作る設計が合理的。馬連・ワイドの相手に下位人気を1〜2頭混ぜるのが過去傾向とも整合。</div>
+    </div>
+  </section>
+
+  <!-- 買い目（券種タブ） -->
+  <section class="fadein bets">
+    <div class="glabel">おすすめの買い方（券種別）</div>
+    <div class="legend">
+      <b>印の対応</b>：◎クロワデュノール ／ ○メイショウタバル ／ ▲ミュージアムマイル ／ △ダノンデサイル ／ △レガレイラ ／ ☆コスモキュランダ ／ ☆ビザンチンドリーム
+    </div>
+    <div class="seg" id="betSeg"></div>
+    <div id="betPanels"></div>
+    <div class="alloc">
+      <b>資金配分の考え方（期待値思考）：</b>的中率の土台＝<b>ワイド・馬連を厚め</b>、3連複で妙味、3連単は小さく夢枠。例）ワイド35%／馬連30%／3連複25%／3連単10%。1番人気は鉄板ではないので、相手に<b>穴を1頭は必ず</b>噛ませて取りこぼしを防ぐ。CFDと同じく「1点の期待値×トータル回収率」で判断を。
     </div>
   </section>
 
@@ -371,6 +407,50 @@ async function loadData(manual){
   }finally{if(manual)btn.disabled=false;}
 }
 
+/* ===== 買い目（券種別） ===== */
+const BETS=[
+  {id:'wide',name:'ワイド',tier:'的中率の土台',
+    rec:[['軸','◎クロワデュノール'],['本線','◎ → ○▲△△（軸流し4点）'],['押さえ','◎ → ☆☆（穴2点で配当上乗せ）'],['保険','○-▲（1点）']],
+    why:'◎は阪神2200の1番人気で<b>複勝率81%</b>と3着内の信頼度が突出。ワイドは2頭が3着内でOKなので取りこぼしにくい。近年の宝塚記念は<b>二桁人気の好走が頻発</b>しており、軸-穴のワイドは配当妙味も大きい。まずここで的中率の土台を作る。'},
+  {id:'umaren',name:'馬連',tier:'中核',
+    rec:[['軸','◎クロワデュノール'],['本線','◎-○ ／ ◎-▲（厚め）'],['相手','◎-△△（2点）'],['押さえ','◎-☆（1点）']],
+    why:'1番人気は<b>勝率40%・連対54%</b>で軸固定が合理的。相手は前走GI組＆コース好相性血統で構成。先行有利の当コースで<b>逃げの○タバルは連対率が高く本線</b>。回収の中核はここ。'},
+  {id:'umatan',name:'馬単',tier:'1着固定',
+    rec:[['1着','◎クロワデュノール 固定'],['本線','◎→○ ／ ◎→▲'],['相手','◎→△△☆']],
+    why:'軸の<b>勝率の高さ（1番人気勝率40%）</b>を素直に1着固定で取りに行く。逆方向（相手→◎）は薄く。先行有利で<b>逃げの○が2着に粘りやすく</b>筆頭相手。馬連より配当を取りつつ点数を絞れる。'},
+  {id:'sanrenpuku',name:'3連複',tier:'バランス',
+    rec:[['軸','◎クロワデュノール 固定'],['F',' ◎ - ○▲△△ - ○▲△△☆☆'],['本線','◎○▲ ／ ◎○△(デサイル)'],['必須','3列目に☆を1頭は必ず']],
+    why:'馬券圏の<b>60%が1〜5番人気</b>＝上位中心で骨格。ただし近年は<b>穴の3着差し込みが頻発</b>するので、3頭目に☆（コスモ／ビザンチン）を必ず噛ませて高配当の取りこぼしを防ぐ。順不同で当てやすく、妙味と的中のバランスが最良。'},
+  {id:'sanrentan',name:'3連単',tier:'高配当',
+    rec:[['1着','◎クロワデュノール 固定'],['2着','○▲（先行有利の逃げ○を上位に）'],['3着','○▲△△☆'],['F例','◎ → ○▲ → ○▲△△☆（約8点）']],
+    why:'1着は軸勝率の高さで固定。<b>逃げ・先行が6勝</b>の当コースで②着は前で運ぶ○タバル・実績の▲が濃厚。点数を絞って配当を最大化。',
+    note:'◎が飛ぶと全滅。資金は小さめ＝夢枠の位置づけで。'},
+  {id:'wakuren',name:'枠連',tier:'枠確定後',
+    rec:[['軸','◎クロワデュノールの枠'],['相手','○▲△ の各枠へ流し']],
+    why:'馬連を枠単位に集約でき点数を減らせる。フルゲート18頭は1枠2頭以上のため、<b>軸の枠に有力が同居すれば割安</b>に取れる一方、配当は馬券より低めになりやすい。馬連の保険的位置づけ。',
+    note:'枠は6/11(木)14:00確定。確定後、上の出走リストの「枠色チップ＝枠番」で置換してください。'},
+  {id:'wakutan',name:'枠単',tier:'枠確定後',
+    rec:[['1着','◎クロワデュノールの枠 固定'],['相手','→ ○▲△ の枠']],
+    why:'馬単の枠版。軸の勝率が高いので<b>1着枠を固定</b>する発想は同じ。同枠に有力2頭が入れば1点で2頭分カバーでき効率的。枠連同様、配当は馬券に比べ低め。',
+    note:'枠は6/11(木)14:00確定後に反映。'}
+];
+function renderBets(){
+  const seg=document.getElementById('betSeg'), pan=document.getElementById('betPanels');
+  seg.innerHTML=BETS.map((b,i)=>`<button class="${i===0?'on':''}" onclick="showBet('${b.id}',this)">${b.name}</button>`).join('');
+  pan.innerHTML=BETS.map((b,i)=>`<div class="panel ${i===0?'on':''}" id="bet-${b.id}">
+    <div class="ph"><span class="nm">${b.name}</span><span class="tier">${b.tier}</span></div>
+    <div class="rec">${b.rec.map(r=>`<div class="ln"><span class="k">${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>
+    <div class="why">${b.why}</div>
+    ${b.note?`<div class="note">⚠ ${b.note}</div>`:''}
+  </div>`).join('');
+}
+function showBet(id,el){
+  document.querySelectorAll('#betSeg button').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('#betPanels .panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('bet-'+id).classList.add('on');
+}
+
 function tick(){
   const post=new Date("2026-06-14T15:40:00+09:00"),diff=post-new Date(),el=document.getElementById('cd');
   if(diff<=0){el.textContent="発走済";return;}
@@ -393,6 +473,7 @@ function makeCharts(){
 }
 
 makeCharts();
+renderBets();
 loadData(false);
 tick(); setInterval(tick,30000);
 </script>
