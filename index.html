@@ -182,6 +182,39 @@
   .bets .alloc{font-size:12px;color:var(--muted);line-height:1.65;background:rgba(255,214,10,.07);border-radius:14px;padding:12px 14px;margin-top:10px;}
   .bets .alloc b{color:var(--gold);font-weight:700;}
 
+  /* Tappable + modal */
+  .tap{cursor:pointer;border-bottom:1px dotted var(--muted2);}
+  .ri .rn .tap{border-bottom:1px dotted rgba(255,255,255,.35);}
+  .tap:active{opacity:.6;}
+  .modal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;justify-content:center;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(3px);padding:0;}
+  .modal.on{display:flex;}
+  .sheet{width:100%;max-width:680px;max-height:86vh;overflow-y:auto;background:#16181d;
+    border-radius:20px 20px 0 0;border-top:.5px solid var(--hair);
+    padding:8px 18px calc(24px + env(safe-area-inset-bottom,0px));animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);}
+  @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .grab{width:38px;height:5px;border-radius:3px;background:var(--card2);margin:8px auto 14px;}
+  .mh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .mh .mt{font-size:20px;font-weight:800;letter-spacing:-.02em;}
+  .mh .mx{font-size:14px;color:var(--muted);background:var(--card2);border:none;border-radius:980px;width:30px;height:30px;cursor:pointer;font-family:inherit;}
+  .msub{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .apt{background:var(--bg2);border-radius:13px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--text);margin-bottom:12px;}
+  .apt .score{display:inline-flex;gap:2px;margin-bottom:6px;}
+  .apt .score i{width:13px;height:13px;border-radius:3px;background:var(--card2);display:inline-block;}
+  .apt .score i.on{background:var(--gold);}
+  .apt .sl{font-size:11px;color:var(--muted);font-weight:700;margin-left:6px;letter-spacing:.02em;}
+  .mlabel{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;margin:4px 2px 8px;}
+  .frow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);border-radius:11px;margin-bottom:7px;}
+  .frow .fd{font-size:11px;color:var(--muted2);font-variant-numeric:tabular-nums;flex:0 0 auto;min-width:38px;}
+  .frow .fr{font-size:13px;font-weight:700;flex:1 1 auto;min-width:0;}
+  .frow .fr small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px;}
+  .frow .ff{font-size:14px;font-weight:800;flex:0 0 auto;}
+  .frow .ff.win{color:var(--gold);} .frow .ff.plc{color:var(--green);} .frow .ff.oth{color:var(--muted2);}
+  .mempty{font-size:12.5px;color:var(--muted);background:var(--card);border-radius:11px;padding:12px 14px;line-height:1.6;}
+  .mlinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .mlinks a{font-size:12px;font-weight:600;color:var(--blue);background:var(--card2);border-radius:980px;padding:9px 15px;text-decoration:none;}
+  .mlinks a:active{opacity:.6;}
+
   @media(min-width:600px){
     .kpi{grid-template-columns:repeat(4,1fr);}
     .charts{grid-template-columns:repeat(3,1fr);}
@@ -265,6 +298,7 @@
   <section class="fadein">
     <div class="glabel">出走・オッズ（JSON連動）</div>
     <div class="group list" id="oddsBody"></div>
+    <div class="src">馬名・騎手をタップ → <b style="color:var(--blue)">宝塚と同条件（中長距離GI・グランプリ・タフな内回り）の好走歴と適性</b>を表示。揮発情報（枠・騎手・斤量・単勝・人気・天気）は <code>data/takarazuka_2026.json</code> から読込。</div>
     <div class="src">馬番・枠は色付きで表示。揮発情報（枠・騎手・斤量・単勝・人気・天気）は <code>data/takarazuka_2026.json</code> から読込。確定枠順は6/11 14:00以降に <code>update_odds.py</code> が反映。</div>
   </section>
 
@@ -345,6 +379,10 @@
 
 </div>
 
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
 <script>
 const CMT = {
   "クロワデュノール":"大阪杯→天皇賞春を連勝。想定1番人気、地力最上位",
@@ -365,9 +403,10 @@ const WAKU={1:['#ffffff','#111'],2:['#1c1c1e','#fff'],3:['#e5392f','#fff'],4:['#
 
 function wakuChip(h){
   let label='•', bg='var(--card2)', fg='var(--muted)';
-  if(h.gate){ const w=parseInt(String(h.gate).split('-')[0],10);
-    if(WAKU[w]){ bg=WAKU[w][0]; fg=WAKU[w][1]; label=String(h.gate).split('-').pop(); } }
-  else if(h.num){ label=h.num; }
+  const w = h.waku ? parseInt(h.waku,10) : (h.gate?parseInt(String(h.gate).split('-')[0],10):null);
+  const num = h.num || (h.gate?String(h.gate).split('-').pop():null);
+  if(w && WAKU[w]){ bg=WAKU[w][0]; fg=WAKU[w][1]; label=num||w; }
+  else if(num){ label=num; }
   return `<div class="waku" style="background:${bg};color:${fg}">${label}</div>`;
 }
 
@@ -380,8 +419,8 @@ function renderTable(horses){
     return `<div class="row ${h.name===FAV?'fav':''}">
       ${wakuChip(h)}
       <div class="ri">
-        <div class="rn">${h.name}${star}</div>
-        <div class="rs">${h.jockey||'騎手未定'} ・ ${h.weight||'—'}kg</div>
+        <div class="rn"><span class="tap hname" data-h="${h.name}">${h.name}</span>${star}</div>
+        <div class="rs"><span class="tap jname" data-j="${h.jockey||''}" data-h="${h.name}">${h.jockey||'騎手未定'}</span> ・ ${h.weight||'—'}kg</div>
         ${cmt?`<div class="rc">${cmt}</div>`:''}
       </div>
       <div class="rt">
@@ -390,6 +429,40 @@ function renderTable(horses){
       </div>
     </div>`;
   }).join('');
+  document.querySelectorAll('#oddsBody .hname').forEach(e=>e.addEventListener('click',()=>openHorse(e.dataset.h)));
+  document.querySelectorAll('#oddsBody .jname').forEach(e=>e.addEventListener('click',()=>openJockey(e.dataset.j,e.dataset.h)));
+}
+
+function nkHorse(name){return 'https://db.netkeiba.com/?pid=horse_list&word='+encodeURIComponent(name);}
+function nkJockey(name){return 'https://db.netkeiba.com/?pid=jockey_list&word='+encodeURIComponent(name);}
+function finClass(f){ if(/1着/.test(f))return 'win'; if(/2着|3着/.test(f))return 'plc'; return 'oth'; }
+function scoreDots(n){ n=n||0; let s=''; for(let i=1;i<=5;i++)s+=`<i class="${i<=n?'on':''}"></i>`; return s; }
+function showModal(html){ document.getElementById('sheet').innerHTML=html; document.getElementById('modal').classList.add('on'); document.body.style.overflow='hidden'; }
+function closeModal(){ document.getElementById('modal').classList.remove('on'); document.body.style.overflow=''; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+function openHorse(name){
+  const h=LIVE.find(x=>x.name===name)||{name:name};
+  const form=(h.form&&h.form.length)
+    ? h.form.map(f=>`<div class="frow"><span class="fd">${f.d||''}</span><span class="fr">${f.race||''}<small>${f.c||''}</small></span><span class="ff ${finClass(f.fin||'')}">${f.fin||''}</span></div>`).join('')
+    : '';
+  showModal(`
+    <div class="grab"></div>
+    <div class="mh"><span class="mt">${h.name}</span><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="msub">${(h.jockey&&h.jockey!=='確認中')?'騎手 '+h.jockey+'　':''}${h.weight?h.weight+'kg':''}${h.gate?'　'+h.gate:''}</div>
+    <div class="apt"><div class="score">${scoreDots(h.aptScore)}<span class="sl">宝塚適性 ${h.aptScore||'?'}/5</span></div>${h.apt||'適性メモは更新で取得します。'}</div>
+    <div class="mlabel">同条件（中長距離GI・グランプリ・タフ内回り）の成績</div>
+    ${form||`<div class="mempty">好走歴データは未取得です。<code>update_odds.py</code> を実行すると各馬の同条件成績が自動で入ります。下のリンクで今すぐ確認も可能です。</div>`}
+    <div class="mlinks"><a href="${nkHorse(h.name)}" target="_blank" rel="noopener">netkeibaで全成績</a><a href="https://www.google.com/search?q=${encodeURIComponent(h.name+' 競走馬 成績')}" target="_blank" rel="noopener">Web検索</a></div>`);
+}
+function openJockey(jk,horse){
+  const name=(jk&&jk!=='確認中')?jk:'';
+  showModal(`
+    <div class="grab"></div>
+    <div class="mh"><span class="mt">${name||'騎手未定'}</span><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="msub">${horse?horse+' 騎乗予定':''}</div>
+    <div class="apt">阪神芝2200m（内回り）は先行力を引き出せる関西主力・外国人騎手の信頼度が高い傾向。${name?name+'の宝塚記念・阪神2200・中長距離GIでの成績は下のリンクで確認できます。':'騎手確定後に再度タップしてください。'}</div>
+    ${name?`<div class="mlinks"><a href="${nkJockey(name)}" target="_blank" rel="noopener">netkeibaで騎手成績</a><a href="https://www.google.com/search?q=${encodeURIComponent(name+' 騎手 宝塚記念 成績')}" target="_blank" rel="noopener">Web検索</a></div>`:''}`);
 }
 
 function hydrateKPI(d){
