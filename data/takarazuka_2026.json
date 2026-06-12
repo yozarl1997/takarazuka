@@ -1,175 +1,175 @@
 {
   "race": "宝塚記念 2026",
-  "updated": "2026-06-10 12:00",
-  "track": "晴れ予報・降水確率30%",
-  "post_confirmed": false,
+  "updated": "2026-06-12 12:00",
+  "track": "晴のち曇・良馬場想定(予報)",
+  "post_confirmed": true,
   "weather": {
-    "high": 27,
-    "low": 20,
-    "rain": 30
+    "high": 28,
+    "low": 19,
+    "rain": 20
   },
   "horses": [
     {
-      "num": null,
-      "gate": null,
-      "name": "クロワデュノール",
-      "jockey": "北村友一",
+      "num": 1,
+      "gate": "1-1",
+      "name": "ダノンデサイル",
+      "jockey": "戸崎圭太",
       "weight": "58.0",
-      "odds": "2.3",
-      "pop": 1
+      "odds": "8.0",
+      "pop": 4
     },
     {
-      "num": null,
-      "gate": null,
-      "name": "メイショウタバル",
-      "jockey": "武豊",
+      "num": 2,
+      "gate": "1-2",
+      "name": "ミュージアムマイル",
+      "jockey": "D.レーン",
       "weight": "58.0",
-      "odds": "3.7",
+      "odds": "4.5",
       "pop": 2
     },
     {
-      "num": null,
-      "gate": null,
-      "name": "ミュージアムマイル",
-      "jockey": "D.レーン",
-      "weight": "56.0",
+      "num": 3,
+      "gate": "2-3",
+      "name": "シュガークン",
+      "jockey": "吉村誠之助",
+      "weight": "58.0",
+      "odds": "54.9",
+      "pop": 16
+    },
+    {
+      "num": 4,
+      "gate": "2-4",
+      "name": "ミクニインスパイア",
+      "jockey": "丹内祐次",
+      "weight": "58.0",
+      "odds": "39.8",
+      "pop": 14
+    },
+    {
+      "num": 5,
+      "gate": "3-5",
+      "name": "クロワデュノール",
+      "jockey": "北村友一",
+      "weight": "58.0",
+      "odds": "2.7",
+      "pop": 1
+    },
+    {
+      "num": 6,
+      "gate": "3-6",
+      "name": "ビザンチンドリーム",
+      "jockey": "西村淳也",
+      "weight": "58.0",
+      "odds": "12.3",
+      "pop": 6
+    },
+    {
+      "num": 7,
+      "gate": "4-7",
+      "name": "ファミリータイム",
+      "jockey": "幸英明",
+      "weight": "58.0",
+      "odds": "60.4",
+      "pop": 17
+    },
+    {
+      "num": 8,
+      "gate": "4-8",
+      "name": "タガノデュード",
+      "jockey": "高杉吏麒",
+      "weight": "58.0",
+      "odds": "25.6",
+      "pop": 11
+    },
+    {
+      "num": 9,
+      "gate": "5-9",
+      "name": "コスモキュランダ",
+      "jockey": "横山武史",
+      "weight": "58.0",
+      "odds": "14.0",
+      "pop": 7
+    },
+    {
+      "num": 10,
+      "gate": "5-10",
+      "name": "ジューンテイク",
+      "jockey": "松山弘平",
+      "weight": "58.0",
+      "odds": "46.5",
+      "pop": 15
+    },
+    {
+      "num": 11,
+      "gate": "6-11",
+      "name": "シンエンペラー",
+      "jockey": "坂井瑠星",
+      "weight": "58.0",
+      "odds": "29.4",
+      "pop": 12
+    },
+    {
+      "num": 12,
+      "gate": "6-12",
+      "name": "マイネルエンペラー",
+      "jockey": "川田将雅",
+      "weight": "58.0",
+      "odds": "66.6",
+      "pop": 18
+    },
+    {
+      "num": 13,
+      "gate": "7-13",
+      "name": "シェイクユアハート",
+      "jockey": "古川吉洋",
+      "weight": "58.0",
+      "odds": "19.0",
+      "pop": 9
+    },
+    {
+      "num": 14,
+      "gate": "7-14",
+      "name": "スティンガーグラス",
+      "jockey": "岩田望来",
+      "weight": "58.0",
+      "odds": "21.3",
+      "pop": 10
+    },
+    {
+      "num": 15,
+      "gate": "7-15",
+      "name": "マイユニバース",
+      "jockey": "横山典弘",
+      "weight": "58.0",
+      "odds": "15.9",
+      "pop": 8
+    },
+    {
+      "num": 16,
+      "gate": "8-16",
+      "name": "メイショウタバル",
+      "jockey": "武豊",
+      "weight": "58.0",
       "odds": "5.2",
       "pop": 3
     },
     {
-      "num": null,
-      "gate": null,
-      "name": "ダノンデサイル",
-      "jockey": "戸崎圭太",
-      "weight": "58.0",
-      "odds": "6.9",
-      "pop": 4
-    },
-    {
-      "num": null,
-      "gate": null,
+      "num": 17,
+      "gate": "8-17",
       "name": "レガレイラ",
       "jockey": "C.ルメール",
       "weight": "56.0",
-      "odds": "8.6",
+      "odds": "9.5",
       "pop": 5
     },
     {
-      "num": null,
-      "gate": null,
-      "name": "ビザンチンドリーム",
-      "jockey": "西村淳也",
-      "weight": "58.0",
-      "odds": "12.9",
-      "pop": 6
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "マイユニバース",
-      "jockey": "横山典弘",
-      "weight": "58.0",
-      "odds": "15.8",
-      "pop": 7
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "スティンガーグラス",
-      "jockey": "岩田望来",
-      "weight": "58.0",
-      "odds": "28.7",
-      "pop": 8
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "シェイクユアハート",
-      "jockey": "古川吉洋",
-      "weight": "58.0",
-      "odds": "34.1",
-      "pop": 9
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "コスモキュランダ",
-      "jockey": "横山武史",
-      "weight": "58.0",
-      "odds": "51.2",
-      "pop": 10
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "ジューンテイク",
-      "jockey": "松山弘平",
-      "weight": "58.0",
-      "odds": "60.0",
-      "pop": 11
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "ミクニインスパイア",
-      "jockey": "丹内祐次",
-      "weight": "58.0",
-      "odds": "61.8",
-      "pop": 12
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "タガノデュード",
-      "jockey": "高杉吏麒",
-      "weight": "58.0",
-      "odds": "64.6",
-      "pop": 13
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "シンエンペラー",
-      "jockey": "坂井瑠星",
-      "weight": "58.0",
-      "odds": "73.9",
-      "pop": 14
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "マイネルエンペラー",
-      "jockey": "川田将雅",
-      "weight": "58.0",
-      "odds": "80.3",
-      "pop": 15
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "シュガークン",
-      "jockey": "吉村誠之助",
-      "weight": "58.0",
-      "odds": "120.0",
-      "pop": 16
-    },
-    {
-      "num": null,
-      "gate": null,
-      "name": "ファミリータイム",
-      "jockey": "幸英明",
-      "weight": "58.0",
-      "odds": "160.0",
-      "pop": 17
-    },
-    {
-      "num": null,
-      "gate": null,
+      "num": 18,
+      "gate": "8-18",
       "name": "ミステリーウェイ",
       "jockey": "松本大輝",
       "weight": "58.0",
-      "odds": "200.0",
-      "pop": 18
+      "odds": "37.5",
+      "pop": 13
     }
   ]
 }
