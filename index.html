@@ -163,9 +163,19 @@
   .bets .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px;}
   .bets .ph .nm{font-size:18px;font-weight:800;letter-spacing:-.02em;}
   .bets .ph .tier{font-size:11px;font-weight:700;color:#00310f;background:var(--green);border-radius:980px;padding:3px 11px;white-space:nowrap;}
-  .bets .rec{background:var(--bg2);border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.65;}
-  .bets .rec .ln{padding:3px 0;display:flex;gap:8px;}
-  .bets .rec .k{color:var(--gold);font-weight:700;flex:0 0 auto;min-width:42px;}
+  .bets .rec{background:var(--bg2);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;}
+  .bets .rec .ln{padding:5px 0;display:flex;flex-wrap:wrap;align-items:center;gap:5px;}
+  .bets .rec .k{color:var(--muted);font-weight:700;flex:0 0 auto;min-width:46px;font-size:12px;}
+  .bets .rec .sep{color:var(--muted2);font-weight:700;margin:0 1px;}
+  .bets .rec .n{color:var(--muted2);font-size:11px;margin-left:2px;}
+  .bets .hb{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border-radius:9px;padding:3px 9px 3px 4px;font-weight:700;font-size:12.5px;letter-spacing:-.01em;}
+  .bets .hb.nochip{padding-left:9px;}
+  .bets .hb .bn{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;border-radius:6px;font-size:11px;font-weight:800;background:var(--muted2);color:#000;font-variant-numeric:tabular-nums;}
+  .bets .hb.r-honmei{color:var(--gold);} .bets .hb.r-honmei .bn{background:var(--gold);color:#3a2e00;}
+  .bets .hb.r-taikou{color:#7db8ff;} .bets .hb.r-taikou .bn{background:var(--blue);color:#fff;}
+  .bets .hb.r-tana{color:#5fe08f;} .bets .hb.r-tana .bn{background:var(--green);color:#00310f;}
+  .bets .hb.r-renka{color:#d6d6da;} .bets .hb.r-renka .bn{background:#8e8e93;color:#fff;}
+  .bets .hb.r-ana{color:#d6a3f5;} .bets .hb.r-ana .bn{background:#bf5af2;color:#fff;}
   .bets .why{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:11px;}
   .bets .why b{color:var(--text);font-weight:700;}
   .bets .note{font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5;}
@@ -241,7 +251,8 @@
   <section class="fadein bets">
     <div class="glabel">おすすめの買い方（券種別）</div>
     <div class="legend">
-      <b>印の対応</b>：◎クロワデュノール ／ ○メイショウタバル ／ ▲ミュージアムマイル ／ △ダノンデサイル ／ △レガレイラ ／ ☆コスモキュランダ ／ ☆ビザンチンドリーム
+      <b>本命 ◎クロワデュノール</b>／対抗 ○メイショウタバル／単穴 ▲ミュージアムマイル／連下 △ダノンデサイル・△レガレイラ／穴 ☆コスモキュランダ・☆ビザンチンドリーム<br>
+      <span style="color:var(--muted2);font-size:11px;">※買い目は馬名で表示。枠順確定（6/11 14:00）後は自動で<b style="color:var(--blue)">馬番</b>に切替わります。</span>
     </div>
     <div class="seg" id="betSeg"></div>
     <div id="betPanels"></div>
@@ -398,6 +409,7 @@ async function loadData(manual){
     if(!res.ok) throw new Error('HTTP '+res.status);
     const d=await res.json();
     renderTable(d.horses||[]); hydrateKPI(d);
+    LIVE=d.horses||[]; renderBets();
     document.getElementById('lastUpdate').textContent=d.updated||'—';
     if(manual){st.className='show load';st.textContent='最新データを読み込みました。';
       setTimeout(()=>st.className='',1800);}
@@ -408,47 +420,71 @@ async function loadData(manual){
 }
 
 /* ===== 買い目（券種別） ===== */
+let LIVE=[];               // loadDataで更新される最新の出走データ
+let activeBet='wide';      // 選択中タブ
+const MARKS={'◎':'クロワデュノール','○':'メイショウタバル','▲':'ミュージアムマイル','△a':'ダノンデサイル','△b':'レガレイラ','☆a':'コスモキュランダ','☆b':'ビザンチンドリーム'};
+const ROLE={'◎':'honmei','○':'taikou','▲':'tana','△a':'renka','△b':'renka','☆a':'ana','☆b':'ana'};
+const SHORT={'クロワデュノール':'クロワ','メイショウタバル':'タバル','ミュージアムマイル':'ミュージアム','ダノンデサイル':'デサイル','レガレイラ':'レガレイラ','コスモキュランダ':'コスモ','ビザンチンドリーム':'ビザンチン'};
+
+function tok(mark,frame){
+  const name=MARKS[mark];
+  if(!name) return `<span class="sep">${mark}</span>`;      // 連結記号（→ - / +）
+  const role=ROLE[mark], short=SHORT[name]||name;
+  const h=LIVE.find(x=>x.name===name);
+  let chip='';
+  if(frame){ const g=(h&&h.gate)?String(h.gate).split('-')[0]:null; if(g)chip=`<i class="bn">${g}</i>`; }
+  else { const num=(h&&h.num)?h.num:null; if(num)chip=`<i class="bn">${num}</i>`; }
+  return `<span class="hb r-${role}${chip?'':' nochip'}">${chip}${short}</span>`;
+}
+
 const BETS=[
   {id:'wide',name:'ワイド',tier:'的中率の土台',
-    rec:[['軸','◎クロワデュノール'],['本線','◎ → ○▲△△（軸流し4点）'],['押さえ','◎ → ☆☆（穴2点で配当上乗せ）'],['保険','○-▲（1点）']],
+    rows:[{k:'軸',t:['◎']},{k:'本線',t:['◎','→','○','▲','△a','△b'],n:'軸流し4点'},
+          {k:'押さえ',t:['◎','→','☆a','☆b'],n:'穴で配当上乗せ'},{k:'保険',t:['○','-','▲'],n:'1点'}],
     why:'◎は阪神2200の1番人気で<b>複勝率81%</b>と3着内の信頼度が突出。ワイドは2頭が3着内でOKなので取りこぼしにくい。近年の宝塚記念は<b>二桁人気の好走が頻発</b>しており、軸-穴のワイドは配当妙味も大きい。まずここで的中率の土台を作る。'},
   {id:'umaren',name:'馬連',tier:'中核',
-    rec:[['軸','◎クロワデュノール'],['本線','◎-○ ／ ◎-▲（厚め）'],['相手','◎-△△（2点）'],['押さえ','◎-☆（1点）']],
+    rows:[{k:'軸',t:['◎']},{k:'本線',t:['◎','-','○','/','◎','-','▲'],n:'厚め'},
+          {k:'相手',t:['◎','-','△a','△b'],n:'2点'},{k:'押さえ',t:['◎','-','☆a'],n:'1点'}],
     why:'1番人気は<b>勝率40%・連対54%</b>で軸固定が合理的。相手は前走GI組＆コース好相性血統で構成。先行有利の当コースで<b>逃げの○タバルは連対率が高く本線</b>。回収の中核はここ。'},
   {id:'umatan',name:'馬単',tier:'1着固定',
-    rec:[['1着','◎クロワデュノール 固定'],['本線','◎→○ ／ ◎→▲'],['相手','◎→△△☆']],
+    rows:[{k:'1着',t:['◎'],n:'固定'},{k:'本線',t:['◎','→','○','/','◎','→','▲']},
+          {k:'相手',t:['◎','→','△a','△b','☆a']}],
     why:'軸の<b>勝率の高さ（1番人気勝率40%）</b>を素直に1着固定で取りに行く。逆方向（相手→◎）は薄く。先行有利で<b>逃げの○が2着に粘りやすく</b>筆頭相手。馬連より配当を取りつつ点数を絞れる。'},
   {id:'sanrenpuku',name:'3連複',tier:'バランス',
-    rec:[['軸','◎クロワデュノール 固定'],['F',' ◎ - ○▲△△ - ○▲△△☆☆'],['本線','◎○▲ ／ ◎○△(デサイル)'],['必須','3列目に☆を1頭は必ず']],
+    rows:[{k:'軸',t:['◎'],n:'固定'},{k:'相手',t:['○','▲','△a','△b']},
+          {k:'3列目',t:['+','☆a','☆b'],n:'必ず1頭'},{k:'本線',t:['◎','○','▲','/','◎','○','△a']}],
     why:'馬券圏の<b>60%が1〜5番人気</b>＝上位中心で骨格。ただし近年は<b>穴の3着差し込みが頻発</b>するので、3頭目に☆（コスモ／ビザンチン）を必ず噛ませて高配当の取りこぼしを防ぐ。順不同で当てやすく、妙味と的中のバランスが最良。'},
   {id:'sanrentan',name:'3連単',tier:'高配当',
-    rec:[['1着','◎クロワデュノール 固定'],['2着','○▲（先行有利の逃げ○を上位に）'],['3着','○▲△△☆'],['F例','◎ → ○▲ → ○▲△△☆（約8点）']],
+    rows:[{k:'1着',t:['◎'],n:'固定'},{k:'2着',t:['○','▲'],n:'逃げ○を上位に'},
+          {k:'3着',t:['○','▲','△a','△b','☆a']},{k:'F例',t:['◎','→','○','▲','→','○','▲','△a','△b','☆a'],n:'約8点'}],
     why:'1着は軸勝率の高さで固定。<b>逃げ・先行が6勝</b>の当コースで②着は前で運ぶ○タバル・実績の▲が濃厚。点数を絞って配当を最大化。',
     note:'◎が飛ぶと全滅。資金は小さめ＝夢枠の位置づけで。'},
-  {id:'wakuren',name:'枠連',tier:'枠確定後',
-    rec:[['軸','◎クロワデュノールの枠'],['相手','○▲△ の各枠へ流し']],
+  {id:'wakuren',name:'枠連',tier:'枠確定後',frame:true,
+    rows:[{k:'軸',t:['◎'],n:'の枠'},{k:'相手',t:['○','▲','△a'],n:'の各枠へ'}],
     why:'馬連を枠単位に集約でき点数を減らせる。フルゲート18頭は1枠2頭以上のため、<b>軸の枠に有力が同居すれば割安</b>に取れる一方、配当は馬券より低めになりやすい。馬連の保険的位置づけ。',
-    note:'枠は6/11(木)14:00確定。確定後、上の出走リストの「枠色チップ＝枠番」で置換してください。'},
-  {id:'wakutan',name:'枠単',tier:'枠確定後',
-    rec:[['1着','◎クロワデュノールの枠 固定'],['相手','→ ○▲△ の枠']],
+    note:'枠は6/11(木)14:00確定。確定後は各馬の頭にある数字が「枠番」になります。'},
+  {id:'wakutan',name:'枠単',tier:'枠確定後',frame:true,
+    rows:[{k:'1着',t:['◎'],n:'の枠・固定'},{k:'相手',t:['→','○','▲','△a'],n:'の枠'}],
     why:'馬単の枠版。軸の勝率が高いので<b>1着枠を固定</b>する発想は同じ。同枠に有力2頭が入れば1点で2頭分カバーでき効率的。枠連同様、配当は馬券に比べ低め。',
     note:'枠は6/11(木)14:00確定後に反映。'}
 ];
+
 function renderBets(){
   const seg=document.getElementById('betSeg'), pan=document.getElementById('betPanels');
-  seg.innerHTML=BETS.map((b,i)=>`<button class="${i===0?'on':''}" onclick="showBet('${b.id}',this)">${b.name}</button>`).join('');
-  pan.innerHTML=BETS.map((b,i)=>`<div class="panel ${i===0?'on':''}" id="bet-${b.id}">
+  if(!seg||!pan) return;
+  seg.innerHTML=BETS.map(b=>`<button data-id="${b.id}" class="${b.id===activeBet?'on':''}">${b.name}</button>`).join('');
+  pan.innerHTML=BETS.map(b=>`<div class="panel" id="bet-${b.id}" style="display:${b.id===activeBet?'block':'none'}">
     <div class="ph"><span class="nm">${b.name}</span><span class="tier">${b.tier}</span></div>
-    <div class="rec">${b.rec.map(r=>`<div class="ln"><span class="k">${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>
+    <div class="rec">${b.rows.map(r=>`<div class="ln"><span class="k">${r.k}</span>${r.t.map(x=>tok(x,b.frame)).join('')}${r.n?`<span class="n">（${r.n}）</span>`:''}</div>`).join('')}</div>
     <div class="why">${b.why}</div>
     ${b.note?`<div class="note">⚠ ${b.note}</div>`:''}
   </div>`).join('');
+  seg.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>showBet(btn.dataset.id)));
 }
-function showBet(id,el){
-  document.querySelectorAll('#betSeg button').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
-  document.querySelectorAll('#betPanels .panel').forEach(p=>p.classList.remove('on'));
-  document.getElementById('bet-'+id).classList.add('on');
+function showBet(id){
+  activeBet=id;
+  document.querySelectorAll('#betSeg button').forEach(b=>b.classList.toggle('on',b.dataset.id===id));
+  document.querySelectorAll('#betPanels .panel').forEach(p=>{p.style.display=(p.id==='bet-'+id)?'block':'none';});
 }
 
 function tick(){
